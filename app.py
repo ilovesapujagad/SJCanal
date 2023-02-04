@@ -1,145 +1,107 @@
+import paramiko
+from paramiko import SSHClient
+from base64 import decodebytes
+from flask import Flask, request, jsonify,make_response
 import json
 import os
 import requests
 from sys import stderr
-from flask import Flask, request, jsonify
-
 app = Flask(__name__)
 
-api_key = os.environ.get("API_KEY", "")
-if api_key == "":
-    print("api key is required", file=stderr)
+@app.get('/api/kafka/listtopics')
+def listtopic(): 
+    hostname = '10.10.65.3'
+    port = 8080
+    username = "sapujagad"
+    password = "kayangan"
+    listtopics = []
 
-api_base_url = "https://api.stagingv3.microgen.id/query/api/v1/" + api_key
 
-@app.route('/')
-def hello_geek():
-    return '<h1>Hello from Flask</h2>'
+    client = SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname, username=username, password=password)
 
-@app.get("/products")
-def getProducts():
+    command = "/usr/yava/current/kafka-broker/bin/kafka-topics.sh --list --zookeeper sapujagad-master01.kayangan.com:2181"
+
+    stdin, stdout, stderr = client.exec_command(command)
+    for line in stdout.readlines():
+        listtopics.append(line.strip())
+    dictis = {}
+    n = len(listtopics)
+    for i in range(n):
+        dictis[i]=listtopics[i]
+    return jsonify(dictis)
+    client.close()
+    
+
+def connect_kafka(commands): 
+    hostname = '10.10.65.3'
+    port = 8080
+    username = "sapujagad"
+    password = "kayangan"
+    responses = {}
+    client = SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname, username=username, password=password)
+
+    command = commands
+
+    stdin, stdout, stderr = client.exec_command(command)
+    for line in stdout.readlines():
+        responses['result']= str(line.strip())
+    return responses
+    client.close()
+
+@app.post('/api/kafka/createtopic')
+def create_topic():
+    request_data = request.get_json()
+    replication_factor = int(request_data['replication_factor'])
+    partitions = int(request_data['partitions'])
+    topic_name = str(request_data['topic_name'])
+    response = connect_kafka(f'/usr/yava/current/kafka-broker/bin/kafka-topics.sh --create --zookeeper sapujagad-master01.kayangan.com:2181 --replication-factor {replication_factor} --partitions {partitions} --topic {topic_name}')
+    return jsonify(response)
+
+@app.delete('/api/kafka/deletetopic')
+def delete_topic():
     try:
-        url = "/".join([api_base_url, "products"])
-        response = requests.get(url)
-        respBody = response.json()
+        request_data = request.get_json()
+        topic_name = str(request_data['topic_name'])
+        response = connect_kafka(f'/usr/yava/current/kafka-broker/bin/kafka-topics.sh --zookeeper sapujagad-master01.kayangan.com:2181 --delete --topic {topic_name}')   
+        return jsonify({'msg': f'succes delete topic {topic_name}'}),200
+    except:
+        return jsonify({'msg': 'error server'}), 500
 
-        if response.status_code != 200:
-            if respBody.get('message') == 'project not found':
-                respJson = jsonify(
-                    {"message": "failed to connect to your project, please check if the api had been set properly."}, 
-                )
-                respJson.status_code = response.status_code
+@app.post('/api/kafka/description')
+def descriptiontopic():
+    try: 
+        hostname = '10.10.65.3'
+        port = 8080
+        username = "sapujagad"
+        password = "kayangan"
+        my_dict = {}
+        request_data = request.get_json()
+        topic_name = str(request_data['topic_name'])
+        listtopics = []
+        client = SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(hostname, username=username, password=password)
 
-                return respJson
+        command = f'/usr/yava/current/kafka-broker/bin/kafka-topics.sh --zookeeper sapujagad-master01.kayangan.com:2181 --describe --topic {topic_name}'
 
-            respJson = jsonify(respBody)
-            respJson.status_code = response.status_code
+        stdin, stdout, stderr = client.exec_command(command)
+        for line in stdout.readlines():
+            listtopics.append(line.strip())
+        my_dict={}
+        for i in range(len(listtopics)):
+            my_dict[i]=listtopics[i]
+            
+        return jsonify(my_dict),200
+        client.close()
+    except:
+        return jsonify({'msg': 'error server'}), 500
 
-            return respJson
 
-        return jsonify(respBody)
-    except Exception as e:
-        return jsonify({"message": "error occured: " + e.__str__()})
 
-@app.post("/products")
-def createProduct():
-    try:
-        url = "/".join([api_base_url, "products"])
-        response = requests.post(url, json.dumps(request.json, indent=2))
-        respBody = response.json()
-
-        if response.status_code != 201:
-            if respBody.get('message') == 'project not found':
-                respJson = jsonify(
-                    {"message": "failed to connect to your project, please check if the api had been set properly."}, 
-                )
-                respJson.status_code = response.status_code
-
-                return respJson
-
-            respJson = jsonify(respBody)
-            respJson.status_code = response.status_code
-
-            return respJson
-        
-        return jsonify(respBody)
-    except Exception as e:
-        return jsonify({"message": "error occured: " + e.__str__()})
-
-@app.get("/products/<id>")
-def getProductById(id):
-    try:
-        url = "/".join([api_base_url, "products", id])
-        response = requests.get(url)
-        respBody = response.json()
-
-        if response.status_code != 200:
-            if respBody.get('message') == 'project not found':
-                respJson = jsonify(
-                    {"message": "failed to connect to your project, please check if the api had been set properly."}, 
-                )
-                respJson.status_code = response.status_code
-
-                return respJson
-
-            respJson = jsonify(respBody)
-            respJson.status_code = response.status_code
-
-            return respJson
-
-        return jsonify(respBody)
-    except Exception as e:
-        return jsonify({"message": "error occured: " + e.__str__()})
-
-@app.patch("/products/<id>")
-def updateProduct(id):
-    try:
-        url = "/".join([api_base_url, "products", id])
-        response = requests.patch(url, json.dumps(request.json, indent=2))
-        respBody = response.json()
-
-        if response.status_code != 200:
-            if respBody.get('message') == 'project not found':
-                respJson = jsonify(
-                    {"message": "failed to connect to your project, please check if the api had been set properly."}, 
-                )
-                respJson.status_code = response.status_code
-
-                return respJson
-
-            respJson = jsonify(respBody)
-            respJson.status_code = response.status_code
-
-            return respJson
-        
-        return jsonify(respBody)
-    except Exception as e:
-        return jsonify({"message": "error occured: " + e.__str__()})
-
-@app.delete("/products/<id>")
-def deleteProduct(id):
-    try:
-        url = "/".join([api_base_url, "products", id])
-        response = requests.delete(url)
-        respBody = response.json()
-
-        if response.status_code != 200:
-            if respBody.get('message') == 'project not found':
-                respJson = jsonify(
-                    {"message": "failed to connect to your project, please check if the api had been set properly."}, 
-                )
-                respJson.status_code = response.status_code
-
-                return respJson
-
-            respJson = jsonify(respBody)
-            respJson.status_code = response.status_code
-
-            return respJson
-
-        return jsonify(respBody)
-    except Exception as e:
-        return jsonify({"message": "error occured: " + e.__str__()})
 
 if __name__ == "__main__":
     app.run(debug=True)
