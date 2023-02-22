@@ -62,6 +62,34 @@ def registeruser():
     response = requests.post(url,json=jsons)
     return response.json()
 
+@app.get("/connector")
+def connector():
+    try:
+        url = "http://10.10.65.5:8083/connectors"
+        response = requests.get(url)
+        x = len(response.json())
+        liststatus = []
+        listsconfig = []
+
+        for i in range(0, x):
+            url = "http://10.10.65.5:8083/connectors/"+ response.json()[i] +"/status"
+            response1 = requests.get(url)
+            liststatus.append(response1.json())
+
+        for i in range(0, x):
+            url = "http://10.10.65.5:8083/connectors/"+ response.json()[i] +"/config"
+            response1 = requests.get(url)
+            listsconfig.append(response1.json())
+
+        dicti = {}
+        for i in range(0, x):
+            dicti[i]=[{"config":listsconfig[i]},{"status":liststatus[i]}]
+        
+        return jsonify(dicti),200
+    
+    except Exception as e:
+        print(e)
+        return jsonify({'status':'error'}),403
 
 
 
