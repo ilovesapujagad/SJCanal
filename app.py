@@ -8,97 +8,59 @@ import requests
 from sys import stderr
 app = Flask(__name__)
 
-@app.get('/api/kafka/listtopics')
-def listtopic(): 
-    hostname = '10.10.65.3'
-    port = 8080
-    username = "sapujagad"
-    password = "kayangan"
-    listtopics = []
+@app.route('/')
+def hello_geek():
+    return '<h1>Hello from Flask</h2>'
 
-
-    client = SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname, username=username, password=password)
-
-    command = "/usr/yava/current/kafka-broker/bin/kafka-topics.sh --list --zookeeper sapujagad-master01.kayangan.com:2181"
-
-    stdin, stdout, stderr = client.exec_command(command)
-    for line in stdout.readlines():
-        listtopics.append(line.strip())
-    dictis = {}
-    n = len(listtopics)
-    for i in range(n):
-        dictis[i]=listtopics[i]
-    return jsonify(dictis)
-    client.close()
-    
-
-def connect_kafka(commands): 
-    hostname = '10.10.65.3'
-    port = 8080
-    username = "sapujagad"
-    password = "kayangan"
-    responses = {}
-    client = SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname, username=username, password=password)
-
-    command = commands
-
-    stdin, stdout, stderr = client.exec_command(command)
-    for line in stdout.readlines():
-        responses['result']= str(line.strip())
-    return responses
-    client.close()
-
-@app.post('/api/kafka/createtopic')
-def create_topic():
+@app.post("/connection/oracle")
+def registeruser():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
     request_data = request.get_json()
-    replication_factor = int(request_data['replication_factor'])
-    partitions = int(request_data['partitions'])
-    topic_name = str(request_data['topic_name'])
-    response = connect_kafka(f'/usr/yava/current/kafka-broker/bin/kafka-topics.sh --create --zookeeper sapujagad-master01.kayangan.com:2181 --replication-factor {replication_factor} --partitions {partitions} --topic {topic_name}')
-    return jsonify(response)
-
-@app.delete('/api/kafka/deletetopic')
-def delete_topic():
-    try:
-        request_data = request.get_json()
-        topic_name = str(request_data['topic_name'])
-        response = connect_kafka(f'/usr/yava/current/kafka-broker/bin/kafka-topics.sh --zookeeper sapujagad-master01.kayangan.com:2181 --delete --topic {topic_name}')   
-        return jsonify({'msg': f'succes delete topic {topic_name}'}),200
-    except:
-        return jsonify({'msg': 'error server'}), 500
-
-@app.post('/api/kafka/description')
-def descriptiontopic():
-    try: 
-        hostname = '10.10.65.3'
-        port = 8080
-        username = "sapujagad"
-        password = "kayangan"
-        my_dict = {}
-        request_data = request.get_json()
-        topic_name = str(request_data['topic_name'])
-        listtopics = []
-        client = SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(hostname, username=username, password=password)
-
-        command = f'/usr/yava/current/kafka-broker/bin/kafka-topics.sh --zookeeper sapujagad-master01.kayangan.com:2181 --describe --topic {topic_name}'
-
-        stdin, stdout, stderr = client.exec_command(command)
-        for line in stdout.readlines():
-            listtopics.append(line.strip())
-        my_dict={}
-        for i in range(len(listtopics)):
-            my_dict[i]=listtopics[i]
-            
-        return jsonify(my_dict),200
-        client.close()
-    except:
-        return jsonify({'msg': 'error server'}), 500
+    name = request_data['name']
+    config_connect_class = request_data['config']["connector.class"]
+    config_name = request_data['config']["name"]
+    config_oracle_server = request_data['config']["oracle.server"]
+    config_oracle_port = request_data['config']["oracle.port"]
+    config_oracle_sid = request_data['config']["oracle.sid"]
+    config_oracle_username = request_data['config']["oracle.username"]
+    config_oracle_password = request_data['config']["oracle.password"]
+    config_table_inclusion_regex = request_data['config']["connector.class"]
+    url = "http://10.10.65.5:8083/connectors"
+    jsons = {
+        "name": str(name),
+        "config": {
+            "connector.class": str(config_connect_class), #dinamis
+            "name": str(config_name), #dinamis
+            "tasks.max": 1,
+            "confluent.topic.bootstrap.servers": "http://10.10.65.5:9092",
+            "oracle.server": str(config_oracle_server), #dinamis
+            "oracle.port": config_oracle_port, #dinamis
+            "oracle.sid": config_oracle_sid, #dinamis
+            "oracle.username": config_oracle_username, #dinamis
+            "oracle.password": config_oracle_password, #dinamis
+            "start.from": "snapshot",
+            "table.inclusion.regex": config_table_inclusion_regex , #dinamis
+            "table.exclusion.regex": "", 
+            "table.topic.name.template": "${fullyQualifiedTableName}",
+            "topic.prefix": "oracle-",
+            "poll.interval.ms": 1000,
+            "connection.pool.max.size": 20,
+            "confluent.topic.replication.factor": 1,
+            "redo.log.consumer.bootstrap.servers": "http://10.10.65.5:9092",
+            "topic.creation.groups": "redo",
+            "topic.creation.redo.include": "redo-log-topic",
+            "topic.creation.redo.replication.factor": 1,
+            "topic.creation.redo.partitions": 1,
+            "topic.creation.redo.cleanup.policy": "delete",
+            "topic.creation.redo.retention.ms": 1209600000,
+            "topic.creation.default.replication.factor": 1,
+            "topic.creation.default.partitions": 1,
+            "topic.creation.default.cleanup.policy": "delete"
+        }
+    }
+    response = requests.post(url,json=jsons)
+    return response.json()
 
 
 
