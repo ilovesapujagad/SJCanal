@@ -90,6 +90,35 @@ def connector():
     except Exception as e:
         print(e)
         return jsonify({'status':'error'}),403
+    
+@app.get("/connector/<connector>")
+def connectorbyid(connector):
+    try:
+        url = "http://10.10.65.5:8083/connectors"
+        response = requests.get(url)
+        x = len(response.json())
+        liststatus = []
+        listsconfig = []
+
+        
+        url = "http://10.10.65.5:8083/connectors/"+ connector +"/status"
+        response1 = requests.get(url)
+        liststatus.append(response1.json())
+
+        url = "http://10.10.65.5:8083/connectors/"+ connector +"/config"
+        response1 = requests.get(url)
+        listsconfig.append(response1.json())
+        dicti={}
+        dicti["response"] = {"config":listsconfig[0]},{"status":liststatus[0]}
+
+        
+        return jsonify(dicti)
+
+    
+    except Exception as e:
+        print(e)
+        return jsonify({'status':'error'}),403
+
 
 
 
