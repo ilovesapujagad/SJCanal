@@ -83,7 +83,7 @@ def connector():
 
         dicti = {}
         for i in range(0, x):
-            dicti[i]=[{"config":listsconfig[i]},{"status":liststatus[i]}]
+            dicti[i]={"config":listsconfig[i]},{"status":liststatus[i]}
         
         return jsonify(dicti),200
     
