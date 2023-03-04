@@ -91,7 +91,7 @@ def connector():
         print(e)
         return jsonify({'status':'error'}),403
     
-@app.get("/connector/<connectorname>")
+@app.get("/connectorname/<connectorname>")
 def connectorbyid(connectorname):
     try:
         url = "http://10.10.65.5:8083/connectors"
