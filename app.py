@@ -42,7 +42,7 @@ def connectorbyid(connectorname):
         return jsonify({'status':'error'}),403
 
 @app.post("/connection/oracle")
-def registeruser():
+def connctionoracle():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
     request_data = request.get_json()
@@ -54,7 +54,7 @@ def registeruser():
     config_oracle_sid = request_data['config']["oracle.sid"]
     config_oracle_username = request_data['config']["oracle.username"]
     config_oracle_password = request_data['config']["oracle.password"]
-    config_table_inclusion_regex = str(request_data['config']["table.inclusion.regex"])
+    config_table_inclusion_regex = request_data['config']["table.inclusion.regex"]
     url = "http://10.10.65.5:8083/connectors"
     jsons = {
         "name": str(name),
@@ -88,8 +88,9 @@ def registeruser():
             "topic.creation.default.cleanup.policy": "delete"
         }
     }
+
     response = requests.post(url,json=jsons)
-    return response.json()
+    return response.json(),response.status_code
 
 @app.get("/connector")
 def connector():
