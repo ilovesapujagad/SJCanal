@@ -12,9 +12,6 @@ app = Flask(__name__)
 def hello_geek():
     return '<h1>Hello from Flask</h2>'
 
-@app.route('/s')
-def hello_geeek():
-    return '<h1>Hello from Flask</h2>'
 
 @app.route("/connectorname/<connectorname>")
 def connectorbyid(connectorname):
