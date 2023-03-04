@@ -25,7 +25,7 @@ def registeruser():
     config_oracle_sid = request_data['config']["oracle.sid"]
     config_oracle_username = request_data['config']["oracle.username"]
     config_oracle_password = request_data['config']["oracle.password"]
-    config_table_inclusion_regex = request_data['config']["table.inclusion.regex"]
+    config_table_inclusion_regex = str(request_data['config']["table.inclusion.regex"])
     url = "http://10.10.65.5:8083/connectors"
     jsons = {
         "name": str(name),
