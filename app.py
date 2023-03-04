@@ -101,11 +101,11 @@ def connectorbyid(connectorname):
         listsconfig = []
 
         
-        url = "http://10.10.65.5:8083/connectors/"+ connector +"/status"
+        url = "http://10.10.65.5:8083/connectors/"+ connectorname +"/status"
         response1 = requests.get(url)
         liststatus.append(response1.json())
 
-        url = "http://10.10.65.5:8083/connectors/"+ connector +"/config"
+        url = "http://10.10.65.5:8083/connectors/"+ connectorname +"/config"
         response1 = requests.get(url)
         listsconfig.append(response1.json())
         dicti={}
