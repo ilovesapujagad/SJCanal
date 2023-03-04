@@ -12,7 +12,7 @@ app = Flask(__name__)
 def hello_geek():
     return '<h1>Hello from Flask</h2>'
 
-@app.get("/connectorname/<connectorname>")
+@app.route("/connectorname/<connectorname>")
 def connectorbyid(connectorname):
     try:
         url = "http://10.10.65.5:8083/connectors"
