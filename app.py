@@ -55,14 +55,14 @@ def connctionoracle():
     config_oracle_username = request_data['config']["oracle.username"]
     config_oracle_password = request_data['config']["oracle.password"]
     config_table_inclusion_regex = request_data['config']["table.inclusion.regex"]
-    url = "http://10.10.65.5:8083/connectors"
+    url = "http://10.10.65.8:8083/connectors"
     jsons = {
         "name": str(name),
         "config": {
             "connector.class": str(config_connect_class), #dinamis
             "name": str(config_name), #dinamis
             "tasks.max": 1,
-            "confluent.topic.bootstrap.servers": "http://10.10.65.5:9092",
+            "confluent.topic.bootstrap.servers": "http://10.10.65.8:9092",
             "oracle.server": str(config_oracle_server), #dinamis
             "oracle.port": config_oracle_port, #dinamis
             "oracle.sid": config_oracle_sid, #dinamis
@@ -76,7 +76,7 @@ def connctionoracle():
             "poll.interval.ms": 1000,
             "connection.pool.max.size": 20,
             "confluent.topic.replication.factor": 1,
-            "redo.log.consumer.bootstrap.servers": "http://10.10.65.5:9092",
+            "redo.log.consumer.bootstrap.servers": "http://10.10.65.88:9092",
             "topic.creation.groups": "redo",
             "topic.creation.redo.include": "redo-log-topic",
             "topic.creation.redo.replication.factor": 1,
