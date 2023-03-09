@@ -16,18 +16,18 @@ def hello_geek():
 @app.route("/connectorname/<connectorname>")
 def connectorbyid(connectorname):
     try:
-        url = "http://10.10.65.5:8083/connectors"
+        url = "http://10.10.65.8:8083/connectors"
         response = requests.get(url)
         x = len(response.json())
         liststatus = []
         listsconfig = []
 
         
-        url = "http://10.10.65.5:8083/connectors/"+ connectorname +"/status"
+        url = "http://10.10.65.8:8083/connectors/"+ connectorname +"/status"
         response1 = requests.get(url)
         liststatus.append(response1.json())
 
-        url = "http://10.10.65.5:8083/connectors/"+ connectorname +"/config"
+        url = "http://10.10.65.8:8083/connectors/"+ connectorname +"/config"
         response1 = requests.get(url)
         listsconfig.append(response1.json())
         dicti={}
@@ -95,19 +95,19 @@ def connctionoracle():
 @app.get("/connector")
 def connector():
     try:
-        url = "http://10.10.65.5:8083/connectors"
+        url = "http://10.10.65.8:8083/connectors"
         response = requests.get(url)
         x = len(response.json())
         liststatus = []
         listsconfig = []
 
         for i in range(0, x):
-            url = "http://10.10.65.5:8083/connectors/"+ response.json()[i] +"/status"
+            url = "http://10.10.65.8:8083/connectors/"+ response.json()[i] +"/status"
             response1 = requests.get(url)
             liststatus.append(response1.json())
 
         for i in range(0, x):
-            url = "http://10.10.65.5:8083/connectors/"+ response.json()[i] +"/config"
+            url = "http://10.10.65.8:8083/connectors/"+ response.json()[i] +"/config"
             response1 = requests.get(url)
             listsconfig.append(response1.json())
 
