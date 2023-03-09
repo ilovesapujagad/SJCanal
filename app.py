@@ -76,7 +76,7 @@ def connctionoracle():
             "poll.interval.ms": 1000,
             "connection.pool.max.size": 20,
             "confluent.topic.replication.factor": 1,
-            "redo.log.consumer.bootstrap.servers": "http://10.10.65.88:9092",
+            "redo.log.consumer.bootstrap.servers": "http://10.10.65.8:9092",
             "topic.creation.groups": "redo",
             "topic.creation.redo.include": "redo-log-topic",
             "topic.creation.redo.replication.factor": 1,
