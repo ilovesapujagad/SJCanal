@@ -62,7 +62,7 @@ def connctionoracle():
             "connector.class": str(config_connect_class), #dinamis
             "name": str(config_name), #dinamis
             "tasks.max": 1,
-            "confluent.topic.bootstrap.servers": "http://10.10.65.8:9092",
+            "confluent.topic.bootstrap.servers": "http://10.10.65.5:9092",
             "oracle.server": str(config_oracle_server), #dinamis
             "oracle.port": config_oracle_port, #dinamis
             "oracle.sid": config_oracle_sid, #dinamis
@@ -76,7 +76,7 @@ def connctionoracle():
             "poll.interval.ms": 1000,
             "connection.pool.max.size": 20,
             "confluent.topic.replication.factor": 1,
-            "redo.log.consumer.bootstrap.servers": "http://10.10.65.8:9092",
+            "redo.log.consumer.bootstrap.servers": "http://10.10.65.5:9092",
             "topic.creation.groups": "redo",
             "topic.creation.redo.include": "redo-log-topic",
             "topic.creation.redo.replication.factor": 1,
@@ -91,6 +91,92 @@ def connctionoracle():
 
     response = requests.post(url,json=jsons)
     return response.json(),response.status_code
+
+
+@app.post("/connection/mysql")
+def connctionmysql():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+    request_data = request.get_json()
+    name = request_data['name']
+    config_connect_class = request_data['config']["connector.class"]
+    config_connect_url = request_data['config']['connection.url']
+    config_connect_username = request_data['config']["connection.user"]
+    config_connect_password = request_data['config']["connection.password"]
+    config_table_whitelist = request_data['config']["table.whitelist"]
+    config_mode = request_data['config']['mode']
+    config_timestamp_column_name = request_data['config']['timestamp.column.name']
+    config_poll_interval_ms = request_data['config']['poll.interval.ms']
+    url = "http://10.10.65.8:8083/connectors"
+    jsons = {
+            "name": name,  #dinamis
+            "config": {
+                "connector.class": config_connect_class,  #dinamis
+                "key.converter": "io.confluent.connect.avro.AvroConverter",  #statis
+                "key.converter.schema.registry.url": "http://10.10.65.5:8081",   #statis
+                "value.converter": "io.confluent.connect.avro.AvroConverter",  #statis
+                "value.converter.schema.registry.url": "http://10.10.65.5:8081",   #stais
+                "tasks.max": 1,   #statis
+                "connection.url": config_connect_url,   #dinamis
+                "connection.user": config_connect_username,  #dinamis
+                "connection.password": config_connect_password,  #dinamis
+                "table.whitelist": config_table_whitelist,  #dinamis (table)
+                "mode": config_mode,  #dinamis (timestamp, increment) <select option>
+                "timestamp.column.name": config_timestamp_column_name,  #dinamis  (from name field)
+                "topic.prefix": "mariadb-",  #statis
+                "poll.interval.ms": config_poll_interval_ms  #dinamis
+            }
+        }
+
+    response = requests.post(url,json=jsons)
+    return response.json(),response.status_code
+
+
+@app.post("/connection/sqlserver")
+def connctionmysqlserver():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+    request_data = request.get_json()
+    name = request_data['name']
+    config_connect_class = request_data['config']["connector.class"]
+    config_database_hostname = request_data['config']['database.hostname']
+    config_database_port = request_data['config']['database.port']
+    config_connect_username = request_data['config']["database.user"]
+    config_connect_password = request_data['config']["database.password"]
+    config_database_name = request_data['config']['database.names']
+    config_database_whitelist = request_data['config']["database.whitelist"]
+    config_table_include_list = request_data['config']['table.include.list']
+    url = "http://10.10.65.8:8083/connectors"
+    jsons = {
+            "name": name,  #dinamis
+            "config": {
+                "connector.class": config_connect_class,  #dinamis
+                "tasks.max": "1",  #statis
+                "topic.prefix": "sqlserver-",  #static
+                "database.hostname": config_database_hostname,  #dinamis
+                "database.port": config_database_port,  #dinamis
+                "database.user": config_connect_username ,  #dinamis
+                "database.password": config_connect_password,  #dinamis
+                "database.names": config_database_name,  #dinamis
+                "database.server.name": "unique-sj",  #static
+                "database.whitelist": config_database_whitelist,  #dinamis (database name)
+                "table.include.list":  config_table_include_list,   #dinamis (table name)
+                "database.history.kafka.bootstrap.servers": "10.10.65.5:9092",  #statis
+                "database.history.kafka.topic": "sqlserver-",  #statis
+                "database.encrypt": False,  #statis
+                "value.converter": "org.apache.kafka.connect.json.JsonConverter",  #statis
+                "key.converter": "org.apache.kafka.connect.json.JsonConverter",   #statis
+                "typeClassName": "org.apache.pulsar.common.schema.KeyValue",   #statis
+                "database.history": "org.apache.pulsar.io.debezium.PulsarDatabaseHistory",   #statis
+                "database.tcpKeepAlive": "true",  #statis
+                "decimal.handling.mode": "double"  #statis
+            }
+        }
+
+    response = requests.post(url,json=jsons)
+    return response.json(),response.status_code
+
+
 
 @app.get("/connector")
 def connector():
