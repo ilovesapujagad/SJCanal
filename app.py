@@ -34,7 +34,7 @@ def connectorbyid(connectorname):
         dicti["response"] = {"config":listsconfig[0]},{"status":liststatus[0]}
 
         
-        return jsonify(dicti)
+        return jsonify(dicti),response1.status_code
 
     
     except Exception as e:
