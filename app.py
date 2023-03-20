@@ -181,19 +181,22 @@ def connctionmysqlserver():
 @app.get("/connector")
 def connector():
     try:
-        url = "http://10.10.65.8:8083/connectors"
-        response = requests.get(url)
-        x = len(response.json())
+        token = request.headers.get('Authorization')
+        url = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/auth/verify-token"
+        headers = {"Authorization": token}
+        response = requests.post(url,headers=headers)
+        total_connect = len(response.json()["user"]["KafkaConnect"])
+        list_connect = response.json()["user"]["KafkaConnect"]
         liststatus = []
         listsconfig = []
 
-        for i in range(0, x):
-            url = "http://10.10.65.8:8083/connectors/"+ response.json()[i] +"/status"
+        for i in range(0, total_connect):
+            url = "http://10.10.65.8:8083/connectors/"+ list_connect[i] +"/status"
             response1 = requests.get(url)
             liststatus.append(response1.json())
 
-        for i in range(0, x):
-            url = "http://10.10.65.8:8083/connectors/"+ response.json()[i] +"/config"
+        for i in range(0, total_connect):
+            url = "http://10.10.65.8:8083/connectors/"+ list_connect[i] +"/config"
             response1 = requests.get(url)
             listsconfig.append(response1.json())
 
