@@ -188,33 +188,30 @@ def connector():
         p = response.json()
 
         if "KafkaConnect" in p["user"] :
-            print("oke")
+            total_connect = len(response.json()["user"]["KafkaConnect"])
+            list_connect = response.json()["user"]["KafkaConnect"]
         else :
             return jsonify({'status':'not have connector'}),200
-        total_connect = len(response.json()["user"]["KafkaConnect"])
-        list_connect = response.json()["user"]["KafkaConnect"]
+
         liststatus = []
         listsconfig = []
-        
         try:
             for i in range(0, total_connect):
                 urlkafkaconnect = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+ list_connect[i] +"?$lookup=*"
                 response = requests.get(urlkafkaconnect,headers=headers)
-                name_connect = response.json()["connector"]
-                url = "http://10.10.65.8:8083/connectors/"+name_connect+"/status"
+                name_connect = response.json()
+                # print(response.json())
+                url = "http://10.10.65.8:8083/connectors/"+name_connect["connector"]+"/status"
                 response1 = requests.get(url)
                 liststatus.append(response1.json())
+                
+                url = "http://10.10.65.8:8083/connectors/"+name_connect["connector"]+"/config"
+                response2= requests.get(url)
+                listsconfig.append(response2.json())
 
-            for i in range(0, total_connect):
-                urlkafkaconnect = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+ list_connect[i] +"?$lookup=*"
-                response = requests.get(urlkafkaconnect,headers=headers)
-                name_connect = response.json()["connector"]
-                url = "http://10.10.65.8:8083/connectors/"+name_connect+"/config"
-                response1 = requests.get(url)
-                listsconfig.append(response1.json())
         except Exception as e:
             print(e)
-            return jsonify({'status':'error database Or Connector'}),403
+            return jsonify({'status':'error database Or Connector, please relogin or check microgen'}),403
         dicti = {}
         for i in range(0, total_connect):
             dicti[i]={"config":listsconfig[i]},{"status":liststatus[i]}
