@@ -185,27 +185,30 @@ def connector():
         url = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/auth/verify-token"
         headers = {"Authorization": token}
         response = requests.post(url,headers=headers)
-        p = response.json()
-
-        if "KafkaConnect" in p["user"] :
-            total_connect = len(response.json()["user"]["KafkaConnect"])
-            list_connect = response.json()["user"]["KafkaConnect"]
+        getid = response.json()["userId"]
+        url = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect?$select[0]=connector&$select[1]=_id&user="+getid+""
+        response = requests.get(url,headers=headers)
+        if response.json() :
+            total_connect = len(response.json())
+            list_connect = response.json()
         else :
             return jsonify({'status':'not have connector'}),200
-
         liststatus = []
         listsconfig = []
+        
         try:
             for i in range(0, total_connect):
-                urlkafkaconnect = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+ list_connect[i] +"?$lookup=*"
-                response = requests.get(urlkafkaconnect,headers=headers)
-                name_connect = response.json()
-                # print(response.json())
-                url = "http://10.10.65.8:8083/connectors/"+name_connect["connector"]+"/status"
+                # urlkafkaconnect = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+ list_connect[i] +"?$lookup=*"
+                # response = requests.get(urlkafkaconnect,headers=headers)
+                # name_connect = response.json()
+                # # print(response.json())
+                url = "http://10.10.65.8:8083/connectors/"+list_connect[i]["connector"]+"/status"
                 response1 = requests.get(url)
                 liststatus.append(response1.json())
-                
-                url = "http://10.10.65.8:8083/connectors/"+name_connect["connector"]+"/config"
+                if response1.status_code == 404:
+                    url = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+list_connect[i]["_id"]+""
+                    requests.delete(url,headers=headers)
+                url = "http://10.10.65.8:8083/connectors/"+list_connect[i]["connector"]+"/config"
                 response2= requests.get(url)
                 listsconfig.append(response2.json())
 
