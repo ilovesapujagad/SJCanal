@@ -185,10 +185,17 @@ def connector():
         url = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/auth/verify-token"
         headers = {"Authorization": token}
         response = requests.post(url,headers=headers)
-        total_connect = len(response.json()["user"]["KafkaConnect"])
-        list_connect = response.json()["user"]["KafkaConnect"]
+        p = response.json()
+        print (p)
+        if "KafkaConnect" in p["user"] :
+            total_connect = len(response.json()["user"]["KafkaConnect"])
+            list_connect = response.json()["user"]["KafkaConnect"]
+        else :
+            return jsonify({'status':'not have connector'}),200
+
         liststatus = []
         listsconfig = []
+        
 
         for i in range(0, total_connect):
             urlkafkaconnect = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+ list_connect[i] +"?$lookup=*"
