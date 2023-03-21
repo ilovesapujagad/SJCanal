@@ -201,7 +201,7 @@ def connector():
             listsconfig.append(response1.json())
 
         dicti = {}
-        for i in range(0, x):
+        for i in range(0, total_connect):
             dicti[i]={"config":listsconfig[i]},{"status":liststatus[i]}
         
         return jsonify(dicti),200
