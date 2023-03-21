@@ -191,12 +191,18 @@ def connector():
         listsconfig = []
 
         for i in range(0, total_connect):
-            url = "http://10.10.65.8:8083/connectors/"+ list_connect[i] +"/status"
+            urlkafkaconnect = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+ list_connect[i] +"?$lookup=*"
+            response = requests.get(urlkafkaconnect,headers=headers)
+            name_connect = response.json()["connector"]
+            url = "http://10.10.65.8:8083/connectors/"+ name_connect +"/status"
             response1 = requests.get(url)
             liststatus.append(response1.json())
 
         for i in range(0, total_connect):
-            url = "http://10.10.65.8:8083/connectors/"+ list_connect[i] +"/config"
+            urlkafkaconnect = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+ list_connect[i] +"?$lookup=*"
+            response = requests.get(urlkafkaconnect,headers=headers)
+            name_connect = response.json()["connector"]
+            url = "http://10.10.65.8:8083/connectors/"+ name_connect +"/config"
             response1 = requests.get(url)
             listsconfig.append(response1.json())
 
