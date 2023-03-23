@@ -23,11 +23,11 @@ def connectorbyid(connectorname):
         listsconfig = []
 
         
-        url = "http://10.10.65.8:8083/connectors/"+ connectorname +"/status"
+        url = "http://10.10.65.60:8083/connectors/"+ connectorname +"/status"
         response1 = requests.get(url)
         liststatus.append(response1.json())
 
-        url = "http://10.10.65.8:8083/connectors/"+ connectorname +"/config"
+        url = "http://10.10.65.60:8083/connectors/"+ connectorname +"/config"
         response1 = requests.get(url)
         listsconfig.append(response1.json())
         dicti={}
@@ -55,7 +55,7 @@ def connctionoracle():
     config_oracle_username = request_data['config']["oracle.username"]
     config_oracle_password = request_data['config']["oracle.password"]
     config_table_inclusion_regex = request_data['config']["table.inclusion.regex"]
-    url = "http://10.10.65.8:8083/connectors"
+    url = "http://10.10.65.60:8083/connectors"
     jsons = {
         "name": str(name),
         "config": {
@@ -107,7 +107,7 @@ def connctionmysql():
     config_mode = request_data['config']['mode']
     config_timestamp_column_name = request_data['config']['timestamp.column.name']
     config_poll_interval_ms = request_data['config']['poll.interval.ms']
-    url = "http://10.10.65.8:8083/connectors"
+    url = "http://10.10.65.60:8083/connectors"
     jsons = {
             "name": name,  #dinamis
             "config": {
@@ -146,7 +146,7 @@ def connctionmysqlserver():
     config_database_name = request_data['config']['database.names']
     config_database_whitelist = request_data['config']["database.whitelist"]
     config_table_include_list = request_data['config']['table.include.list']
-    url = "http://10.10.65.8:8083/connectors"
+    url = "http://10.10.65.60:8083/connectors"
     jsons = {
             "name": name,  #dinamis
             "config": {
@@ -202,13 +202,13 @@ def connector():
                 # response = requests.get(urlkafkaconnect,headers=headers)
                 # name_connect = response.json()
                 # # print(response.json())
-                url = "http://10.10.65.8:8083/connectors/"+list_connect[i]["connector"]+"/status"
+                url = "http://10.10.65.60:8083/connectors/"+list_connect[i]["connector"]+"/status"
                 response1 = requests.get(url)
                 liststatus.append(response1.json())
                 if response1.status_code == 404:
                     url = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+list_connect[i]["_id"]+""
                     requests.delete(url,headers=headers)
-                url = "http://10.10.65.8:8083/connectors/"+list_connect[i]["connector"]+"/config"
+                url = "http://10.10.65.60:8083/connectors/"+list_connect[i]["connector"]+"/config"
                 response2= requests.get(url)
                 listsconfig.append(response2.json())
 
