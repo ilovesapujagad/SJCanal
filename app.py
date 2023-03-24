@@ -256,7 +256,7 @@ def kafka_messages(topic):
     client_cmd = client.invoke_shell()
 
     # print ("SSH CONNECTION ESTABLISHED TO vMEG %s" % ip)
-    cmd_io ("docker exec -it ubuntu-kafka /opt/confluent/bin/kafka-avro-console-consumer --topic "+topic+" --bootstrap-server localhost:9092 --from-beginning")
+    cmd_io ("sudo docker exec -it ubuntu-kafka /opt/confluent/bin/kafka-avro-console-consumer --topic "+topic+" --bootstrap-server localhost:9092 --from-beginning")
     # cmd_io ("ls /usr/bin")
     # cmd_io ("debug wag https")
     # cmd_io ("debug wag httpc")
