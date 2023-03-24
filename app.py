@@ -308,7 +308,7 @@ def consumer_groups(topic):
         ssh_con(ip,un,pw)
         client_cmd = client.invoke_shell()
 
-        cmd_io (f"sudo docker exec -it ubuntu-kafka /opt/confluent/bin/kafka-consumer-groups --bootstrap-server localhost:9092 --all-groups --describe | grep -E 'TOPIC|{topic}'")
+        cmd_io (f"sudo docker exec -it ubuntu-kafka /opt/confluent/bin/kafka-consumer-groups --bootstrap-server localhost:9092 --all-groups --describe | grep -E '{topic}'")
 
         check = True
         list_output = []
@@ -335,7 +335,7 @@ def consumer_groups(topic):
         # return y
         list_consumer = []
         for i in range(0, n):
-            if i%2 == 1:
+            if i == i:
                 print(i)
                 list_consumer.append({'GROUP':sub_lists[i][0], 'TOPIC':sub_lists[i][1], 'PARTITION':sub_lists[i][2], 'CURRENT-OFFSET':sub_lists[i][3], 'LOG-END-OFFSET':sub_lists[i][4], 'LAG':sub_lists[i][5], 'CONSUMER-ID':sub_lists[i][6], 'HOST':sub_lists[i][7], 'CLIENT-ID':sub_lists[i][8]}) 
             else:
