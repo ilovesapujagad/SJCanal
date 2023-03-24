@@ -263,19 +263,83 @@ def kafka_messages(topic):
     # cmd_io ("debug wag kafka")
     
     check = True
-    x = []
-    y={}
+    list_message = []
+    dict_message={}
     client_cmd.settimeout(1.0)
     while check:
         try:
             output = client_cmd.recv(10000).decode("utf-8")
-            x.append({"message": output})
+            list_message.append({"message": output})
             print (output)
         except socket.timeout:
-            y["message"]=x
+            dict_message["message"]=list_message
             check = False
             pass
-    return y,200
+    return dict_message,200
+
+@app.route("/kafka/consumer/groups/<topic>")
+def consumer_groups(topic):
+    try:
+        def ssh_con (ip, un, pw):
+            global client
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            print ("Connecting to device/VM: %s" % ip)
+            client.connect(ip, username=un, password=pw)
+
+
+        def cmd_io (command):
+            client_cmd 
+            client_cmd.send("%s \n" %command)
+            time.sleep(1)
+            output = client_cmd.recv(10000).decode("utf-8")
+            # print (output)
+
+        # ip = raw_input("Enter WAG IP : ")
+        # ip  = sys.argv[1]
+
+        ip = '10.10.65.60'
+        un = 'ubuntu'
+        pw = '2wsx1qaz'
+
+        ssh_con(ip,un,pw)
+        client_cmd = client.invoke_shell()
+
+        cmd_io (f"sudo docker exec -it ubuntu-kafka /opt/confluent/bin/kafka-consumer-groups --bootstrap-server localhost:9092 --all-groups --describe | grep -E 'TOPIC|{topic}'")
+
+        check = True
+        list_output = []
+        y={}
+        client_cmd.settimeout(1.0)
+        while check:
+            try:
+                output = client_cmd.recv(10000).decode("utf-8")
+                ansi_escape = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
+                output = ansi_escape.sub('', output)
+                output= output.replace('\r\n', ' ')
+                output = output.split()
+                list_output += output
+                print (output)
+            except socket.timeout:
+                list_output.pop()
+                y["message"]=list_output
+                check = False
+                pass
+        size = 9
+        sub_lists = [list_output[i:i+size] for i in range(0, len(list_output), size)]
+        n=len(sub_lists)
+        print(sub_lists[1])
+        # return y
+        list_consumer = []
+        for i in range(0, n):
+            if i%2 == 1:
+                print(i)
+                list_consumer.append({'GROUP':sub_lists[i][0], 'TOPIC':sub_lists[i][1], 'PARTITION':sub_lists[i][2], 'CURRENT-OFFSET':sub_lists[i][3], 'LOG-END-OFFSET':sub_lists[i][4], 'LAG':sub_lists[i][5], 'CONSUMER-ID':sub_lists[i][6], 'HOST':sub_lists[i][7], 'CLIENT-ID':sub_lists[i][8]}) 
+            else:
+                pass
+        return list_consumer,200
+    except Exception as e:
+        return jsonify({'status':str(e)}),403
     
 
 
