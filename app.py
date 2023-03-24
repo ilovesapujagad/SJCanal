@@ -268,6 +268,7 @@ def kafka_messages(topic):
     list_message = []
     dict_message={}
     client_cmd.settimeout(1.0)
+    time.sleep(2)
     while check:
         try:
             output = client_cmd.recv(10000).decode("utf-8")
