@@ -225,6 +225,58 @@ def connector():
         print(e)
         return jsonify({'status':'error'}),403
     
+@app.route("/kafka/message/<topic>")
+def kafka_messages(topic):
+
+    def ssh_con (ip, un, pw):
+        global client
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        print ("Connecting to device/VM: %s" % ip)
+        client.connect(ip, username=un, password=pw)
+
+
+    def cmd_io (command):
+        client_cmd
+        client_cmd.send("%s \n" %command)
+        time.sleep(1)
+        output = client_cmd.recv(10000).decode("utf-8")
+        # print (output)
+
+    # ip = raw_input("Enter WAG IP : ")
+    # ip  = sys.argv[1]
+
+    ip = '10.10.65.60'
+    un = 'ubuntu'
+    pw = '2wsx1qaz'
+
+    ssh_con(ip,un,pw)
+    client_cmd = client.invoke_shell()
+
+    # print ("SSH CONNECTION ESTABLISHED TO vMEG %s" % ip)
+    cmd_io ("docker exec -it ubuntu-kafka /opt/confluent/bin/kafka-avro-console-consumer --topic "+topic+" --bootstrap-server localhost:9092 --from-beginning")
+    # cmd_io ("ls /usr/bin")
+    # cmd_io ("debug wag https")
+    # cmd_io ("debug wag httpc")
+    # cmd_io ("debug https")
+    # cmd_io ("debug httpc")
+    # cmd_io ("debug wag kafka")
+    
+    check = True
+    x = []
+    y={}
+    client_cmd.settimeout(1.0)
+    while check:
+        try:
+            output = client_cmd.recv(10000).decode("utf-8")
+            x.append({"message": output})
+            print (output)
+        except socket.timeout:
+            y["message"]=x
+            check = False
+            pass
+    return y,200
+    
 
 
 
