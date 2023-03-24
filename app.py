@@ -343,6 +343,7 @@ def consumer_groups(topic):
                 pass
         return list_consumer,200
     except Exception as e:
+        print(e)
         return jsonify({'status':str(e)}),403
     
 
