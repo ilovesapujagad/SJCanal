@@ -19,7 +19,7 @@ def hello_geek():
 @app.route("/connectorname/<connectorname>")
 def connectorbyid(connectorname):
     try:
-        url = "http://10.10.65.8:8083/connectors"
+        url = "http://10.10.65.60:8083/connectors"
         response = requests.get(url)
         x = len(response.json())
         liststatus = []
