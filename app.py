@@ -281,7 +281,7 @@ def kafka_messages(topic):
             pass
     return dict_message,200
 
-@app.route("/kafka/consumer/groups/<topic>")
+@app.get("/kafka/consumer/groups/<topic>")
 def consumer_groups(topic):
     try:
         def ssh_con (ip, un, pw):
