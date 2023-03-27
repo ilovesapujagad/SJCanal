@@ -341,7 +341,9 @@ def consumer_groups(topic):
                 list_consumer.append({'GROUP':sub_lists[i][0], 'TOPIC':sub_lists[i][1], 'PARTITION':sub_lists[i][2], 'CURRENT-OFFSET':sub_lists[i][3], 'LOG-END-OFFSET':sub_lists[i][4], 'LAG':sub_lists[i][5], 'CONSUMER-ID':sub_lists[i][6], 'HOST':sub_lists[i][7], 'CLIENT-ID':sub_lists[i][8]}) 
             else:
                 pass
-        return list_consumer,200
+        result = {}
+        result["result"] = list_consumer
+        return result,200
     except Exception as e:
         print(e)
         return jsonify({'status':str(e)}),403
