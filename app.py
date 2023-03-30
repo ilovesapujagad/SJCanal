@@ -37,6 +37,14 @@ def connctionoracle():
         return jsonify({"msg": "Missing JSON in request"}), 400
     request_data = request.get_json()
     name = request_data['name']
+    url = "http://10.10.65.61:28083/connectors"
+    response = requests.get(url)
+    list_connector = response.json()
+    # Will print the index of 'bat' in list2
+    if name in list_connector :
+        return jsonify({"msg": "Name is Available"}), 400
+    else:
+        print ("no")
     config_connect_class = request_data['config']["connector.class"]
     config_name = request_data['config']["name"]
     config_oracle_server = request_data['config']["oracle.server"]
@@ -90,6 +98,14 @@ def connctionmysql():
         return jsonify({"msg": "Missing JSON in request"}), 400
     request_data = request.get_json()
     name = request_data['name']
+    url = "http://10.10.65.61:28083/connectors"
+    response = requests.get(url)
+    list_connector = response.json()
+    # Will print the index of 'bat' in list2
+    if name in list_connector :
+        return jsonify({"msg": "Name is Available"}), 400
+    else:
+        print ("no")
     config_connect_class = request_data['config']["connector.class"]
     config_connect_url = request_data['config']['connection.url']
     config_connect_username = request_data['config']["connection.user"]
@@ -129,6 +145,14 @@ def connctionmysqlserver():
         return jsonify({"msg": "Missing JSON in request"}), 400
     request_data = request.get_json()
     name = request_data['name']
+    url = "http://10.10.65.61:28083/connectors"
+    response = requests.get(url)
+    list_connector = response.json()
+    # Will print the index of 'bat' in list2
+    if name in list_connector :
+        return jsonify({"msg": "Name is Available"}), 400
+    else:
+        print ("no")
     config_connect_class = request_data['config']["connector.class"]
     config_database_hostname = request_data['config']['database.hostname']
     config_database_port = request_data['config']['database.port']
