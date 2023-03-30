@@ -101,10 +101,10 @@ def connctionmysql():
     url = f"http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors/{name}"
     jsons = {
                 "connector.class": config_connect_class,  #dinamis
-                "key.converter": "io.confluent.connect.avro.AvroConverter",  #statis
-                "key.converter.schema.registry.url": "http://10.10.65.60:8081",   #statis
-                "value.converter": "io.confluent.connect.avro.AvroConverter",  #statis
-                "value.converter.schema.registry.url": "http://10.10.65.60:8081",   #stais
+#                 "key.converter": "io.confluent.connect.avro.AvroConverter",  #statis
+#                 "key.converter.schema.registry.url": "http://10.10.65.60:8081",   #statis
+#                 "value.converter": "io.confluent.connect.avro.AvroConverter",  #statis
+#                 "value.converter.schema.registry.url": "http://10.10.65.60:8081",   #stais
                 "tasks.max": 1,   #statis
                 "connection.url": config_connect_url,   #dinamis
                 "connection.user": config_connect_username,  #dinamis
@@ -153,10 +153,10 @@ def connctionmysqlserver():
                 "database.history.kafka.bootstrap.servers": "10.10.65.61:9092",  #statis
                 "database.history.kafka.topic": "sqlserver-",  #statis
                 "database.encrypt": False,  #statis
-                "value.converter": "org.apache.kafka.connect.json.JsonConverter",  #statis
-                "key.converter": "org.apache.kafka.connect.json.JsonConverter",   #statis
-                "typeClassName": "org.apache.pulsar.common.schema.KeyValue",   #statis
-                "database.history": "org.apache.pulsar.io.debezium.PulsarDatabaseHistory",   #statis
+#                 "value.converter": "org.apache.kafka.connect.json.JsonConverter",  #statis
+#                 "key.converter": "org.apache.kafka.connect.json.JsonConverter",   #statis
+#                 "typeClassName": "org.apache.pulsar.common.schema.KeyValue",   #statis
+#                 "database.history": "org.apache.pulsar.io.debezium.PulsarDatabaseHistory",   #statis
                 "database.tcpKeepAlive": "true",  #statis
                 "decimal.handling.mode": "double"  #statis
             }
