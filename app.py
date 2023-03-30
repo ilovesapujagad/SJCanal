@@ -78,7 +78,10 @@ def connctionoracle():
     
 
     response = requests.put(url,json=jsons)
-    return jsonify({'status':'oke'}),response.status_code
+    if response.status_code == 204:
+        return jsonify({'status':'oke'}),200
+    else:
+        return response.json(),response.status_code
 
 
 @app.post("/connection/mysql")
@@ -114,7 +117,10 @@ def connctionmysql():
             }
 
     response = requests.put(url,json=jsons)
-    return jsonify({'status':'oke'}),response.status_code
+    if response.status_code == 204:
+        return jsonify({'status':'oke'}),200
+    else:
+        return response.json(),response.status_code
 
 
 @app.post("/connection/sqlserver")
@@ -157,7 +163,10 @@ def connctionmysqlserver():
         
 
     response = requests.post(url,json=jsons)
-    return jsonify({'status':'oke'}),response.status_code
+    if response.status_code == 204:
+        return jsonify({'status':'oke'}),200
+    else:
+        return response.json(),response.status_code
 
 
 
