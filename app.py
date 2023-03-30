@@ -19,25 +19,12 @@ def hello_geek():
 @app.route("/connectorname/<connectorname>")
 def connectorbyid(connectorname):
     try:
-        url = "http://10.10.65.60:8083/connectors"
+        url = "http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors"
         response = requests.get(url)
-        x = len(response.json())
-        liststatus = []
-        listsconfig = []
+        json_response = response.json()["connectors"][connectorname]
 
         
-        url = "http://10.10.65.60:8083/connectors/"+ connectorname +"/status"
-        response1 = requests.get(url)
-        liststatus.append(response1.json())
-
-        url = "http://10.10.65.60:8083/connectors/"+ connectorname +"/config"
-        response1 = requests.get(url)
-        listsconfig.append(response1.json())
-        dicti={}
-        dicti["response"] = {"config":listsconfig[0]},{"status":liststatus[0]}
-
-        
-        return jsonify(dicti),response1.status_code
+        return jsonify(json_response),response.status_code
 
     
     except Exception as e:
@@ -58,14 +45,12 @@ def connctionoracle():
     config_oracle_username = request_data['config']["oracle.username"]
     config_oracle_password = request_data['config']["oracle.password"]
     config_table_inclusion_regex = request_data['config']["table.inclusion.regex"]
-    url = "http://10.10.65.60:8083/connectors"
+    url = f"http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors/{name}"
     jsons = {
-        "name": str(name),
-        "config": {
             "connector.class": str(config_connect_class), #dinamis
             "name": str(config_name), #dinamis
             "tasks.max": 1,
-            "confluent.topic.bootstrap.servers": "http://10.10.65.60:9092",
+            "confluent.topic.bootstrap.servers": "http://10.10.65.61:9092",
             "oracle.server": str(config_oracle_server), #dinamis
             "oracle.port": config_oracle_port, #dinamis
             "oracle.sid": config_oracle_sid, #dinamis
@@ -79,7 +64,7 @@ def connctionoracle():
             "poll.interval.ms": 1000,
             "connection.pool.max.size": 20,
             "confluent.topic.replication.factor": 1,
-            "redo.log.consumer.bootstrap.servers": "http://10.10.65.60:9092",
+            "redo.log.consumer.bootstrap.servers": "http://10.10.65.61:9092",
             "topic.creation.groups": "redo",
             "topic.creation.redo.include": "redo-log-topic",
             "topic.creation.redo.replication.factor": 1,
@@ -90,9 +75,9 @@ def connctionoracle():
             "topic.creation.default.partitions": 1,
             "topic.creation.default.cleanup.policy": "delete"
         }
-    }
+    
 
-    response = requests.post(url,json=jsons)
+    response = requests.put(url,json=jsons)
     return response.json(),response.status_code
 
 
@@ -110,10 +95,8 @@ def connctionmysql():
     config_mode = request_data['config']['mode']
     config_timestamp_column_name = request_data['config']['timestamp.column.name']
     config_poll_interval_ms = request_data['config']['poll.interval.ms']
-    url = "http://10.10.65.60:8083/connectors"
+    url = f"http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors/{name}"
     jsons = {
-            "name": name,  #dinamis
-            "config": {
                 "connector.class": config_connect_class,  #dinamis
                 "key.converter": "io.confluent.connect.avro.AvroConverter",  #statis
                 "key.converter.schema.registry.url": "http://10.10.65.60:8081",   #statis
@@ -129,9 +112,8 @@ def connctionmysql():
                 "topic.prefix": "mariadb-",  #statis
                 "poll.interval.ms": config_poll_interval_ms  #dinamis
             }
-        }
 
-    response = requests.post(url,json=jsons)
+    response = requests.put(url,json=jsons)
     return response.json(),response.status_code
 
 
@@ -149,10 +131,8 @@ def connctionmysqlserver():
     config_database_name = request_data['config']['database.names']
     config_database_whitelist = request_data['config']["database.whitelist"]
     config_table_include_list = request_data['config']['table.include.list']
-    url = "http://10.10.65.60:8083/connectors"
+    url = f"http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors/{name}"
     jsons = {
-            "name": name,  #dinamis
-            "config": {
                 "connector.class": config_connect_class,  #dinamis
                 "tasks.max": "1",  #statis
                 "topic.prefix": "sqlserver-",  #static
@@ -164,7 +144,7 @@ def connctionmysqlserver():
                 "database.server.name": "unique-sj",  #static
                 "database.whitelist": config_database_whitelist,  #dinamis (database name)
                 "table.include.list":  config_table_include_list,   #dinamis (table name)
-                "database.history.kafka.bootstrap.servers": "10.10.65.60:9092",  #statis
+                "database.history.kafka.bootstrap.servers": "10.10.65.61:9092",  #statis
                 "database.history.kafka.topic": "sqlserver-",  #statis
                 "database.encrypt": False,  #statis
                 "value.converter": "org.apache.kafka.connect.json.JsonConverter",  #statis
@@ -174,7 +154,7 @@ def connctionmysqlserver():
                 "database.tcpKeepAlive": "true",  #statis
                 "decimal.handling.mode": "double"  #statis
             }
-        }
+        
 
     response = requests.post(url,json=jsons)
     return response.json(),response.status_code
@@ -197,32 +177,22 @@ def connector():
         else :
             return jsonify({'status':'not have connector'}),200
         liststatus = []
-        listsconfig = []
+        
         
         try:
             for i in range(0, total_connect):
-                # urlkafkaconnect = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+ list_connect[i] +"?$lookup=*"
-                # response = requests.get(urlkafkaconnect,headers=headers)
-                # name_connect = response.json()
-                # # print(response.json())
-                url = "http://10.10.65.60:8083/connectors/"+list_connect[i]["connector"]+"/status"
-                response1 = requests.get(url)
-                liststatus.append(response1.json())
-                if response1.status_code == 404:
-                    url = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect/"+list_connect[i]["_id"]+""
-                    requests.delete(url,headers=headers)
-                url = "http://10.10.65.60:8083/connectors/"+list_connect[i]["connector"]+"/config"
-                response2= requests.get(url)
-                listsconfig.append(response2.json())
-
+                url = "http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors"
+                response = requests.get(url)
+                print(list_connect[i])
+                liststatus.append(response.json()["connectors"][list_connect[i]["connector"]])
         except Exception as e:
             print(e)
             return jsonify({'status':'error database Or Connector, please relogin or check microgen'}),403
-        dicti = {}
-        for i in range(0, total_connect):
-            dicti[i]={"config":listsconfig[i]},{"status":liststatus[i]}
+        # dicti = {}
+        # for i in range(0, total_connect):
+        #     dicti[i]={"config":liststatus}
         
-        return jsonify(dicti),200
+        return jsonify(liststatus),200
     
     except Exception as e:
         print(e)
