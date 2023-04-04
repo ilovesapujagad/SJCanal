@@ -34,7 +34,7 @@ def connectorbyid(connectorname):
 @app.post("/connection/oracle")
 def connctionoracle():
     if not request.is_json:
-        return jsonify({"msg": "Missing JSON in request"}), 400
+        return jsonify({"message": "Missing JSON in request"}), 400
     request_data = request.get_json()
     name = request_data['name']
     url = "http://10.10.65.61:28083/connectors"
@@ -42,7 +42,7 @@ def connctionoracle():
     list_connector = response.json()
     # Will print the index of 'bat' in list2
     if name in list_connector :
-        return jsonify({"msg": "Name is Available"}), 400
+        return jsonify({"message": "Name is Available"}), 400
     else:
         print ("no")
     config_connect_class = request_data['config']["connector.class"]
@@ -95,7 +95,7 @@ def connctionoracle():
 @app.post("/connection/mysql")
 def connctionmysql():
     if not request.is_json:
-        return jsonify({"msg": "Missing JSON in request"}), 400
+        return jsonify({"message": "Missing JSON in request"}), 400
     request_data = request.get_json()
     name = request_data['name']
     url = "http://10.10.65.61:28083/connectors"
@@ -103,7 +103,7 @@ def connctionmysql():
     list_connector = response.json()
     # Will print the index of 'bat' in list2
     if name in list_connector :
-        return jsonify({"msg": "Name is Available"}), 400
+        return jsonify({"message": "Name is Available"}), 400
     else:
         print ("no")
     config_connect_class = request_data['config']["connector.class"]
@@ -142,7 +142,7 @@ def connctionmysql():
 @app.post("/connection/sqlserver")
 def connctionmysqlserver():
     if not request.is_json:
-        return jsonify({"msg": "Missing JSON in request"}), 400
+        return jsonify({"message": "Missing JSON in request"}), 400
     request_data = request.get_json()
     name = request_data['name']
     url = "http://10.10.65.61:28083/connectors"
@@ -150,7 +150,7 @@ def connctionmysqlserver():
     list_connector = response.json()
     # Will print the index of 'bat' in list2
     if name in list_connector :
-        return jsonify({"msg": "Name is Available"}), 400
+        return jsonify({"message": "Name is Available"}), 400
     else:
         print ("no")
     config_connect_class = request_data['config']["connector.class"]
@@ -196,7 +196,7 @@ def connctionmysqlserver():
 @app.post("/connection/sink/mysql")
 def connctionsinkmysql():
     if not request.is_json:
-        return jsonify({"msg": "Missing JSON in request"}), 400
+        return jsonify({"message": "Missing JSON in request"}), 400
     request_data = request.get_json()
     name = request_data['name']
     url = "http://10.10.65.61:28083/connectors"
@@ -204,7 +204,7 @@ def connctionsinkmysql():
     list_connector = response.json()
     # Will print the index of 'bat' in list2
     if name in list_connector :
-        return jsonify({"msg": "Name is Available"}), 400
+        return jsonify({"message": "Name is Available"}), 400
     else:
         print ("no")
     config_connect_class = request_data['config']["connector.class"]
