@@ -159,7 +159,7 @@ def connctionmysqlserver():
     config_connect_username = request_data['config']["database.user"]
     config_connect_password = request_data['config']["database.password"]
     config_database_name = request_data['config']['database.names']
-    config_database_whitelist = request_data['config']["insert.mode"]
+    config_database_whitelist = request_data['config']["database.whitelist"]
     config_table_include_list = request_data['config']['table.include.list']
     url = f"http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors/{name}"
     jsons = {
@@ -213,7 +213,7 @@ def connctionsinkmysql():
     config_connection_password = request_data['config']["connection.password"]
     config_topics = request_data['config']["topics"]
     config_table_name_format = request_data['config']['table.name.format']
-    config_insert_mode = request_data['config']["database.whitelist"]
+    config_insert_mode = request_data['config']["insert_mode"]
     config_pk_mode = request_data['config']['pk.mode']
     config_database_allowPublicKeyRetrieval = request_data['config']['database.allowPublicKeyRetrieval']
     url = f"http://10.10.65.61:28083/connectors"
