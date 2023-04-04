@@ -290,7 +290,9 @@ def groupsbyname(topic_name):
     try:
         url = "http://10.10.65.61:9991/api/v2/admin/metrics/aggregated/topics/"+topic_name+"?from=1677995230601&to=1680587230601&state=all"
         response = requests.get(url)
-        return response.json()['consumerGroupToLag']
+        groups = {}
+        groups["consumerGroupToLag"] = response.json()['consumerGroupToLag']
+        return jsonify(groups)
     except Exception as e:
         print(e)
         return jsonify({'status':'error'}),403
