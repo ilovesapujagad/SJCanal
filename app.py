@@ -196,7 +196,7 @@ def connctionmysqlserver():
 @app.post("/connection/sink/mysql")
 def connctionsinkmysql():
     if not request.is_json:
-        return jsonify({"message": "Missing JSON in request"}), 400
+        return jsonify({"msg": "Missing JSON in request"}), 400
     request_data = request.get_json()
     name = request_data['name']
     url = "http://10.10.65.61:28083/connectors"
@@ -204,7 +204,7 @@ def connctionsinkmysql():
     list_connector = response.json()
     # Will print the index of 'bat' in list2
     if name in list_connector :
-        return jsonify({"message": "Name is Available"}), 400
+        return jsonify({"msg": "Name is Available"}), 400
     else:
         print ("no")
     config_connect_class = request_data['config']["connector.class"]
@@ -216,19 +216,24 @@ def connctionsinkmysql():
     config_insert_mode = request_data['config']["database.whitelist"]
     config_pk_mode = request_data['config']['pk.mode']
     config_database_allowPublicKeyRetrieval = request_data['config']['database.allowPublicKeyRetrieval']
-    url = f"http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors/{name}"
+    url = f"http://10.10.65.61:28083/connectors"
     jsons = {
-                "connector.class": config_connect_class,
-                "tasks.max": 1,
-                "connection.url": config_connection_url,
-                "connection.user": config_connection_user,
-                "connection.password": config_connection_password,
-                "topics": config_topics,
-                "table.name.format": config_table_name_format,
-                "insert.mode": config_insert_mode,
-                "pk.mode": config_pk_mode,
-                "database.allowPublicKeyRetrieval": config_database_allowPublicKeyRetrieval,
-                "auto.create":"true"
+            "name": name,
+            "config": {
+                        "connector.class": config_connect_class,
+                        "tasks.max": 1,
+                        "connection.url": config_connection_url,
+                        "connection.user": config_connection_user,
+                        "connection.password": config_connection_password,
+                        "topics": config_topics,
+                        "table.name.format": config_table_name_format,
+                        "insert.mode": config_insert_mode,
+                        "pk.mode": config_pk_mode,
+                        "database.allowPublicKeyRetrieval": config_database_allowPublicKeyRetrieval,
+                        "auto.create":"true"
+             },
+            "tasks": [],
+            "type": "sink"
             }
         
 
