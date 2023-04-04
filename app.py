@@ -218,28 +218,25 @@ def connctionsinkmysql():
     config_database_allowPublicKeyRetrieval = request_data['config']['database.allowPublicKeyRetrieval']
     url = f"http://10.10.65.61:28083/connectors"
     jsons = {
-            "name": name,
-            "config": {
-                        "connector.class": config_connect_class,
-                        "tasks.max": 1,
-                        "connection.url": config_connection_url,
-                        "connection.user": config_connection_user,
-                        "connection.password": config_connection_password,
-                        "topics": config_topics,
-                        "table.name.format": config_table_name_format,
-                        "insert.mode": config_insert_mode,
-                        "pk.mode": config_pk_mode,
-                        "database.allowPublicKeyRetrieval": config_database_allowPublicKeyRetrieval,
-                        "auto.create":"true"
-             },
-            "tasks": [],
-            "type": "sink"
+                "name": name,
+                "config": {
+                    "connector.class": config_connect_class,
+                    "tasks.max": 1,
+                    "connection.url": config_connection_url,
+                    "connection.user": config_connection_user,
+                    "connection.password": config_connection_password,
+                    "topics": config_topics,
+                    "table.name.format": config_table_name_format,
+                    "insert.mode": config_insert_mode,
+                    "pk.mode": config_pk_mode,
+                    "database.allowPublicKeyRetrieval": config_database_allowPublicKeyRetrieval,
+                    "auto.create": "true"
+                }
             }
-        
-
+    
     response = requests.post(url,json=jsons)
-    if response.status_code == 204:
-        return jsonify({'status':'oke'}),200
+    if response.status_code == 201:
+        return response.json(),200
     else:
         return response.json(),response.status_code
     
