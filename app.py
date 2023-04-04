@@ -242,16 +242,22 @@ def connctionsinkmysql():
     
 
 
-@app.get("/connector")
-def connector():
+@app.get("/connector/<typeconnector>")
+def connector(typeconnector):
+    
     try:
         token = request.headers.get('Authorization')
         url = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/auth/verify-token"
         headers = {"Authorization": token}
         response = requests.post(url,headers=headers)
         getid = response.json()["userId"]
-        url = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect?$select[0]=connector&$select[1]=_id&user="+getid+""
-        response = requests.get(url,headers=headers)
+        if typeconnector == "source":
+            urlfilter = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect?$select[0]=connector&$select[1]=_id&$select[2]=sink&sink=false&user="+getid+""
+        else:
+            urlfilter = "https://database-query.v3.microgen.id/api/v1/fb6db565-2e6c-41eb-bf0f-66f43b2b75ae/KafkaConnect?$select[0]=connector&$select[1]=_id&$select[2]=sink&sink=true&user="+getid+""
+        response = requests.get(urlfilter,headers=headers)
+            
+        
         if response.json() :
             total_connect = len(response.json())
             list_connect = response.json()
