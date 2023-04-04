@@ -196,7 +196,7 @@ def connctionmysqlserver():
 @app.post("/connection/sink/mysql")
 def connctionsinkmysql():
     if not request.is_json:
-        return jsonify({"msg": "Missing JSON in request"}), 400
+        return jsonify({"message": "Missing JSON in request"}), 400
     request_data = request.get_json()
     name = request_data['name']
     url = "http://10.10.65.61:28083/connectors"
