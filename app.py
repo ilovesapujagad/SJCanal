@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_geek():
-    return '<h1>Hello from Flask</h2>'
+    return '<h1>Hello </h2>'
 
 
 @app.route("/connectorname/<connectorname>")
