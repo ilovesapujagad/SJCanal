@@ -30,6 +30,50 @@ def connectorbyid(connectorname):
     except Exception as e:
         print(e)
         return jsonify({'status':'error'}),403
+    
+@app.post("/connection/all/source")
+def allconnctionsource():
+    if not request.is_json:
+        return jsonify({"message": "Missing JSON in request"}), 400
+    request_data = request.get_json()
+    name = request_data['name']
+    url = "http://10.10.65.61:28083/connectors"
+    response = requests.get(url)
+    list_connector = response.json()
+    # Will print the index of 'bat' in list2
+    if name in list_connector :
+        return jsonify({"message": "Name is Available"}), 400
+    else:
+        print ("no")
+    url = f"http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors/{name}"
+
+    response = requests.post(url,json=request_data['config'])
+    if response.status_code == 204:
+        return jsonify({'status':'oke'}),200
+    else:
+        return response.json(),response.status_code
+
+@app.post("/connection/all/sink")
+def allconnctionsink():
+    if not request.is_json:
+        return jsonify({"message": "Missing JSON in request"}), 400
+    request_data = request.get_json()
+    name = request_data['name']
+    url = "http://10.10.65.61:28083/connectors"
+    response = requests.get(url)
+    list_connector = response.json()
+    # Will print the index of 'bat' in list2
+    if name in list_connector :
+        return jsonify({"message": "Name is Available"}), 400
+    else:
+        print ("no")
+    url = f"http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors/{name}"
+
+    response = requests.post(url,json=request_data['config'])
+    if response.status_code == 204:
+        return jsonify({'status':'oke'}),200
+    else:
+        return response.json(),response.status_code
 
 @app.post("/connection/oracle")
 def connctionoracle():
