@@ -47,7 +47,7 @@ def allconnctionsource():
         print ("no")
     url = f"http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors/{name}"
 
-    response = requests.post(url,json=request_data['config'])
+    response = requests.put(url,json=request_data['config'])
     if response.status_code == 204:
         return jsonify({'status':'oke'}),200
     else:
@@ -69,7 +69,7 @@ def allconnctionsink():
         print ("no")
     url = f"http://10.10.65.61:9991/api/v1/admin/kafka-connect/connectors/{name}"
 
-    response = requests.post(url,json=request_data['config'])
+    response = requests.put(url,json=request_data['config'])
     if response.status_code == 204:
         return jsonify({'status':'oke'}),200
     else:
